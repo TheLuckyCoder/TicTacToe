@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cassert>
-
 #include "Board.h"
 #include "StackVector.h"
 

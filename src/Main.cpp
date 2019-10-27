@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <cassert>
 #include "Search.h"
 
 void clear()
