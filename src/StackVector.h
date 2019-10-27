@@ -110,11 +110,6 @@ public:
 	constexpr StackVector(const StackVector&) noexcept = default;
 	constexpr StackVector(StackVector&&) noexcept = default;
 
-	~StackVector()
-	{
-		destroyAll(begin(), end());
-	}
-
 	constexpr StackVector &operator=(std::initializer_list<T> list) noexcept
 	{
 		_size = list.size() > N ? N : list.size();
@@ -133,7 +128,6 @@ public:
 
 		return *this;
 	}
-
 
 	template<size_type otherN>
 	constexpr StackVector &operator+=(StackVector<T, otherN> &&other) noexcept
@@ -156,12 +150,10 @@ public:
 	// Element Access
 	constexpr reference at(size_type pos) noexcept(false)
 	{
-		if (pos >= _size) throwLengthException();
 		return _array[pos];
 	}
 	constexpr const_reference at(size_type pos) const noexcept(false)
 	{
-		if (pos >= _size) throwLengthException();
 		return _array[pos];
 	}
 
@@ -212,12 +204,9 @@ public:
 	template<class... Args >
 	constexpr reference emplace(const size_type pos, Args&&... args) noexcept(false)
 	{
-		if (++_size > N) throwLengthException();
 		std::move(_array + pos, _array + _size - 1, _array + pos + 1);
 
 		reference ref = _array[_size - 1];
-		if constexpr (!std::is_trivially_destructible_v<T>)
-			ref.~T();
 
 		new (&ref) T(std::forward<Args>(args)...);
 
@@ -246,21 +235,17 @@ public:
 
 	constexpr void push_back(T &&value) noexcept(false)
 	{
-		if (++_size > N) throwLengthException();
 		_array[_size - 1] = std::move(value);
 	}
 
 	constexpr void push_back(const T &value) noexcept(false)
 	{
-		if (++_size > N) throwLengthException();
 		_array[_size - 1] = value;
 	}
 
 	template<class... Args >
 	constexpr reference emplace_back(Args&&... args) noexcept(false)
 	{
-		if (++_size > N) throwLengthException();
-
 		reference ref = _array[_size - 1];
 		new (&ref) T(std::forward<Args>(args)...);
 
@@ -276,34 +261,10 @@ public:
 	constexpr void pop_back() noexcept
 	{
 		if (_size > 0)
-		{
 			--_size;
-			if constexpr (!std::is_trivially_destructible_v<T>)
-				_array[_size].~T();
-		}
 	}
 
 private:
-	union
-	{
-		bool _hidden[N * sizeof(T)];
-		value_type _array[N];
-	};
+	value_type _array[N];
 	size_type _size;
-
-	constexpr void destroyAll(iterator first, iterator last)
-	{
-		if constexpr (!std::is_trivially_destructible_v<T>)
-		{
-			while (first != last)
-			{
-				first->~T();
-				++first;
-			}
-		}
-	}
-
-	static constexpr void throwLengthException() noexcept(false)
-	{
-	}
 };

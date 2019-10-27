@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "src/Search.h"
+#include "Search.h"
 
 void clear()
 {
@@ -64,6 +64,13 @@ bool checkForWinners(const Board &board)
 		return true;
 	}
 
+	if (board.state == State::NONE &&
+		board.movesCount == 9) // All squares are occupied
+	{
+		print("Draw\n");
+		return true;
+	}
+
 	return false;
 }
 
@@ -71,32 +78,31 @@ int main()
 {
 	Board board;
 
-	printMainBoard(board);
-
 	while (true)
 	{
+		printMainBoard(board);
+		if (checkForWinners(board))
+			break;
+
 		const char input = std::cin.get();
-		if (input == 'q')
+		if (input == 'q'|| input == 'Q')
 			break;
 
 		if (input < '1' || input > '9')
 			continue;
 
 		const byte selectedSquare = static_cast<byte>(input - '1');
-		assert(board.makeMove(selectedSquare));
+		if (!board.makeMove(selectedSquare))
+		{
+			print("Invalid square!");
+			continue;
+		}
 
 		printMainBoard(board);
 		if (checkForWinners(board))
 			break;
 
-		// Print the board before and after the move is made
-		{
-			const byte bestMoveFound = Search::getBestMove(board);
-			assert(board.makeMove(bestMoveFound));
-			printMainBoard(board);
-			if (checkForWinners(board))
-				break;
-		}
+		assert(board.makeMove(Search::getBestMove(board)));
 	}
 	
 	return 0;

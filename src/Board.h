@@ -11,6 +11,7 @@ public:
 	State state = State::NONE;
 	Side sideToMove = Side::X;
 	byte lastPlacedSquare{}; // needed for the Search function
+	byte movesCount{};
 
 	constexpr Bitboard getOccupied() const noexcept
 	{
@@ -32,6 +33,7 @@ public:
 		pieces |= Rays::shiftedBoards[square];
 		sideToMove = invertSide(sideToMove);
 		lastPlacedSquare = square;
+		++movesCount;
 
 		return updateState();
 	}
