@@ -148,20 +148,20 @@ public:
 	constexpr StackVector &operator=(StackVector&&) noexcept = default;
 
 	// Element Access
-	constexpr reference at(size_type pos) noexcept(false)
+	constexpr reference at(size_type pos) noexcept
 	{
 		return _array[pos];
 	}
-	constexpr const_reference at(size_type pos) const noexcept(false)
+	constexpr const_reference at(size_type pos) const noexcept
 	{
 		return _array[pos];
 	}
 
-	constexpr reference operator[](size_type pos) noexcept(false)
+	constexpr reference operator[](size_type pos) noexcept
 	{
 		return _array[pos];
 	}
-	constexpr const_reference operator[](size_type pos) const noexcept(false)
+	constexpr const_reference operator[](size_type pos) const noexcept
 	{
 		return _array[pos];
 	}
@@ -202,7 +202,7 @@ public:
 	}
 
 	template<class... Args >
-	constexpr reference emplace(const size_type pos, Args&&... args) noexcept(false)
+	constexpr reference emplace(const size_type pos, Args&&... args) noexcept
 	{
 		std::move(_array + pos, _array + _size - 1, _array + pos + 1);
 
@@ -233,20 +233,20 @@ public:
 		return last;
 	}
 
-	constexpr void push_back(T &&value) noexcept(false)
+	constexpr void push_back(T &&value) noexcept
 	{
-		_array[_size - 1] = std::move(value);
+		_array[_size++] = std::move(value);
 	}
 
-	constexpr void push_back(const T &value) noexcept(false)
+	constexpr void push_back(const T &value) noexcept
 	{
-		_array[_size - 1] = value;
+		_array[_size++] = value;
 	}
 
 	template<class... Args >
-	constexpr reference emplace_back(Args&&... args) noexcept(false)
+	constexpr reference emplace_back(Args&&... args) noexcept
 	{
-		reference ref = _array[_size - 1];
+		reference ref = _array[_size++];
 		new (&ref) T(std::forward<Args>(args)...);
 
 		return ref;

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Enums.h"
-#include "Rays.h"
+#include "Defs.h"
 
 class Board
 {

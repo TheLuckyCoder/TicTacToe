@@ -7,7 +7,8 @@
 
 class Search
 {
-public:
+	using Data = std::array<std::array<byte, 511>, 511>;
+
 	static constexpr StackVector<Board, 9> generateMoves(const Board &board) noexcept
 	{
 		StackVector<Board, 9> moves{};
@@ -18,7 +19,7 @@ public:
 		{
 			Board tempBoard = board;
 
-			// skip this move if the board is not valid
+			// Skip this move if the board is not valid
 			if (!tempBoard.makeMove(square))
 				continue;
 			if (sideToMove == Side::X && tempBoard.state == O_WINNER)
@@ -32,7 +33,7 @@ public:
 		return moves;
 	}
 
-	static constexpr int negaMax(const Board &board) noexcept
+	static constexpr int negaMax(Data &data, const Board &board) noexcept
 	{
 		const auto moves = generateMoves(board);
 
@@ -49,30 +50,37 @@ public:
 			return (board.sideToMove == Side::X) ? score : -score;
 		}
 
-		int bestState = State::O_WINNER;
+		Board bestMove = moves.front();
+		int bestScore = State::O_WINNER;
 
 		for (const Board &move : moves)
 		{
-			const int newState = -negaMax(move);
+			const int newState = -negaMax(data, move);
 
-			if (newState > bestState)
-				bestState = newState;
+			if (newState > bestScore)
+			{
+				bestMove = move;
+				bestScore = newState;
+			}
 		}
 
-		return bestState;
+		data[board.oPieces][board.xPieces] = bestMove.lastPlacedSquare;
+		return bestScore;
 	}
 
-public:
-	static constexpr byte getBestMove(const Board &board)
+	static Data initData() noexcept
 	{
-		const auto moves = generateMoves(board);
-		assert(!moves.empty());
+		Data data{};
+
+		const Board emptyBoard;
+		const auto moves = generateMoves(emptyBoard);
+
 		Board bestMove = moves.front();
 		int bestScore = -100;
 
 		for (const Board &move : moves)
 		{
-			const int newScore = -negaMax(move);
+			const int newScore = -negaMax(data, move);
 
 			if (bestScore < newScore)
 			{
@@ -81,6 +89,14 @@ public:
 			}
 		}
 
-		return bestMove.lastPlacedSquare;
+		data[emptyBoard.oPieces][emptyBoard.xPieces] = bestMove.lastPlacedSquare;
+		return data;
+	}
+
+public:
+	static byte getBestMove(const Board board) noexcept
+	{
+		const static Data bestMoves = initData();
+		return bestMoves[board.oPieces][board.xPieces];
 	}
 };

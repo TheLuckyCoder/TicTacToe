@@ -4,8 +4,6 @@
 
 void clear()
 {
-	// Flush all data to the screen before clearing it
-	std::flush(std::cout);
 #if defined _WIN32
 	system("cls");
 #elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
@@ -20,11 +18,13 @@ void print(Arg &&arg, Args &&...args)
 {
 	std::cout << std::forward<Arg>(arg);
 	((std::cout << std::forward<Args>(args)), ...);
+	std::flush(std::cout);
 }
 
 void printMainBoard(const Board &board)
 {
 	clear();
+	print('\n');
 	std::array<char, 9> chars{};
 
 	for (unsigned i = 0; i < chars.max_size(); ++i)
@@ -88,10 +88,10 @@ int main()
 		if (input == 'q'|| input == 'Q')
 			break;
 
-		if (input < '1' || input > '9')
+		if (input < '0' || input > '9')
 			continue;
 
-		const byte selectedSquare = static_cast<byte>(input - '1');
+		const byte selectedSquare = static_cast<byte>(input - '0');
 		if (!board.makeMove(selectedSquare))
 		{
 			print("Invalid square!");
