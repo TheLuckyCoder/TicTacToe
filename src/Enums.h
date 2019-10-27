@@ -5,12 +5,12 @@ using Bitboard = unsigned short;
 
 enum State : char
 {
-	O_WINNER = -1,
+	O_WINNER = -100,
 	NONE = 0,
-	X_WINNER = 1
+	X_WINNER = 100
 };
 
-enum class Side : bool
+enum class Side : int
 {
 	O, X
 };

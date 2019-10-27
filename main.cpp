@@ -1,8 +1,5 @@
 #include <iostream>
-#include <cassert>
 
-#include "src/Board.h"
-#include "src/Rays.h"
 #include "src/Search.h"
 
 void clear()
@@ -16,6 +13,13 @@ void clear()
 #elif defined (__APPLE__)
 	system("clear");
 #endif
+}
+
+template<typename Arg, typename... Args>
+void print(Arg &&arg, Args &&...args)
+{
+	std::cout << std::forward<Arg>(arg);
+	((std::cout << std::forward<Args>(args)), ...);
 }
 
 void printMainBoard(const Board &board)
@@ -36,27 +40,27 @@ void printMainBoard(const Board &board)
 	// Iterate backwards so we can print from bottom to top
 	for (auto i = chars.size(); i--;)
 	{
-		std::cout << chars[i];
+		print(chars[i]);
 		if (i % 3 == 0)
-			std::cout << "\n- - -\n";
+			print("\n- - -\n");
 		else
-			std::cout << '|';
+			print('|');
 	}
 
-	std::cout << "\nPress q to quit\n";
+	print("\nPress q to quit\n");
 }
 
 bool checkForWinners(const Board &board)
 {
 	if (board.state == State::X_WINNER)
 	{
-		std::cout << "X has Won!\n";
+		print("X has Won!\n");
 		return true;
 	}
 
 	if (board.state == State::O_WINNER)
 	{
-		std::cout << "O has Won!\n";
+		print("O has Won!\n");
 		return true;
 	}
 
@@ -84,6 +88,7 @@ int main()
 		printMainBoard(board);
 		if (checkForWinners(board))
 			break;
+
 		// Print the board before and after the move is made
 		{
 			const byte bestMoveFound = Search::getBestMove(board);
@@ -93,5 +98,6 @@ int main()
 				break;
 		}
 	}
+	
 	return 0;
 }
