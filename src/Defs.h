@@ -24,7 +24,8 @@ constexpr Side invertSide(const Side side)
 
 namespace Rays
 {
-	constexpr auto shiftedBoards = [] {
+	constexpr static auto SQUARE_BITBOARDS = []
+	{
 		std::array<Bitboard, 9> boards{};
 		boards[0] = 1u;
 
@@ -34,12 +35,19 @@ namespace Rays
 		return boards;
 	}();
 
-	constexpr unsigned short WEST = 0b100'100'100;
-	constexpr unsigned short EAST = 0b001'001'001;
-	constexpr unsigned short NORTH = 0b111'000'000;
-	constexpr unsigned short SOUTH = 0b000'000'111;
-	constexpr unsigned short HORIZONTAL = 0b010'010'010;
-	constexpr unsigned short VERTICAL = 0b000'111'000;
-	constexpr unsigned short DIAGONAL_MAIN = 0b001'010'100;
-	constexpr unsigned short DIAGONAL_SEC = 0b100'010'001;
+	constexpr Bitboard toBitboard(const byte index) noexcept
+	{
+		assert(index < 9u);
+		return SQUARE_BITBOARDS[index];
+	}
+
+	constexpr Bitboard ALL_SQUARES = 0b111'111'111;
+	constexpr Bitboard WEST = 0b100'100'100;
+	constexpr Bitboard EAST = 0b001'001'001;
+	constexpr Bitboard NORTH = 0b111'000'000;
+	constexpr Bitboard SOUTH = 0b000'000'111;
+	constexpr Bitboard HORIZONTAL = 0b010'010'010;
+	constexpr Bitboard VERTICAL = 0b000'111'000;
+	constexpr Bitboard DIAGONAL_MAIN = 0b001'010'100;
+	constexpr Bitboard DIAGONAL_SEC = 0b100'010'001;
 }

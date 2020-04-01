@@ -24,12 +24,12 @@ public:
 	{
 		const Bitboard allPieces = getOccupied();
 
-		if (allPieces & Rays::shiftedBoards[square])
+		if (allPieces & Rays::toBitboard(square))
 			return false;
 
 		auto &pieces = (sideToMove == Side::X) ? xPieces : oPieces;
 
-		pieces |= Rays::shiftedBoards[square];
+		pieces |= Rays::toBitboard(square);
 		sideToMove = invertSide(sideToMove);
 		lastPlacedSquare = square;
 		++movesCount;

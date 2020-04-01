@@ -1,19 +1,53 @@
 #pragma once
 
 #include "Board.h"
-#include "StackVector.h"
 
 class Search
 {
-	using Data = std::array<std::array<byte, 511>, 511>;
-
-	static constexpr StackVector<Board, 9> generateMoves(const Board &board) noexcept
+	class Moves
 	{
-		StackVector<Board, 9> moves{};
+	public:
+		constexpr void push_back(const Board &board) noexcept
+		{
+			if (size() < capacity())
+			{
+				*_end = board;
+				++_end;
+			}
+		}
+
+		constexpr bool empty() const noexcept { return begin() == end(); }
+		constexpr byte size() const noexcept { return end() - begin(); }
+
+		constexpr Board *begin() noexcept { return _boards; }
+		constexpr const Board *begin() const noexcept { return _boards; }
+		constexpr Board *end() noexcept { return _end; }
+		constexpr const Board *end() const noexcept { return _end; }
+
+		constexpr Board &front() noexcept { return *begin(); }
+		constexpr const Board &front() const noexcept { return *begin(); }
+		constexpr Board &back() noexcept { return *end(); }
+		constexpr const Board &back() const noexcept { return *end(); }
+
+		static constexpr byte capacity() { return CAPACITY; }
+
+	private:
+		static constexpr byte CAPACITY = 9;
+
+	private:
+		Board _boards[CAPACITY]{};
+		Board *_end = _boards;
+	};
+
+	using SearchData = std::array<std::array<byte, Rays::ALL_SQUARES>, Rays::ALL_SQUARES>;
+
+	static constexpr Moves generateMoves(const Board &board) noexcept
+	{
+		Moves moves{};
 
 		const Side sideToMove = board.sideToMove;
 
-		for (byte square = 0u; square < moves.capacity(); ++square)
+		for (byte square = 0u; square < Moves::capacity(); ++square)
 		{
 			Board tempBoard = board;
 
@@ -31,7 +65,7 @@ class Search
 		return moves;
 	}
 
-	static constexpr int negaMax(Data &data, const Board &board) noexcept
+	static constexpr int negaMax(SearchData &data, const Board &board) noexcept
 	{
 		const auto moves = generateMoves(board);
 
@@ -66,9 +100,9 @@ class Search
 		return bestScore;
 	}
 
-	static Data initData() noexcept
+	static constexpr SearchData initSearchData() noexcept
 	{
-		Data data{};
+		SearchData data{};
 
 		const Board emptyBoard;
 		const auto moves = generateMoves(emptyBoard);
@@ -92,9 +126,10 @@ class Search
 	}
 
 public:
-	static byte getBestMove(const Board board) noexcept
+	static byte getBestMove(const Board &board) noexcept
 	{
-		const static Data bestMoves = initData();
+		// Compute the entire search tree only once
+		const static SearchData bestMoves = initSearchData();
 		return bestMoves[board.oPieces][board.xPieces];
 	}
 };

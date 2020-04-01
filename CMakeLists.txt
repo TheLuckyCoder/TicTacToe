@@ -9,5 +9,4 @@ add_executable(TicTacToe
         src/Main.cpp
         src/Search.h
         src/Board.h
-        src/Defs.h
-        src/StackVector.h)
+        src/Defs.h)

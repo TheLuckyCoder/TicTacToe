@@ -7,9 +7,7 @@ void clear()
 {
 #if defined _WIN32
 	system("cls");
-#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
-	system("clear");
-#elif defined (__APPLE__)
+#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__) || defined (__APPLE__)
 	system("clear");
 #endif
 }
@@ -30,9 +28,9 @@ void printMainBoard(const Board &board)
 
 	for (unsigned i = 0; i < chars.max_size(); ++i)
 	{
-		if (board.oPieces & Rays::shiftedBoards[i])
+		if (board.oPieces & Rays::toBitboard(i))
 			chars[i] = 'O';
-		else if (board.xPieces & Rays::shiftedBoards[i])
+		else if (board.xPieces & Rays::toBitboard(i))
 			chars[i] = 'X';
 		else
 			chars[i] = ' ';
@@ -47,8 +45,6 @@ void printMainBoard(const Board &board)
 		else
 			print('|');
 	}
-
-	print("\nPress q to quit\n");
 }
 
 bool checkForWinners(const Board &board)
@@ -77,6 +73,7 @@ bool checkForWinners(const Board &board)
 
 int main()
 {
+	print("Press q to quit\n\n");
 	Board board;
 
 	while (true)
@@ -92,7 +89,7 @@ int main()
 		if (input < '0' || input > '9')
 			continue;
 
-		const byte selectedSquare = static_cast<byte>(input - '0');
+		const byte selectedSquare = static_cast<byte>(input - '1');
 		if (!board.makeMove(selectedSquare))
 		{
 			print("Invalid square!");
@@ -105,6 +102,6 @@ int main()
 
 		assert(board.makeMove(Search::getBestMove(board)));
 	}
-	
+
 	return 0;
 }
